@@ -1,0 +1,28 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: python-flask-app
+    ports:
+      - "5000:5000"
+    volumes:
+      - .:/app
+    environment:
+      - FLASK_APP=app.py
+      - FLASK_RUN_HOST=0.0.0.0
+    cap_add:
+      - NET_ADMIN
+    # Permissive firewall - allows most outbound traffic for convenience
+    # Common development services and registries are allowed
+    sysctls:
+      - net.ipv4.ip_forward=1
+    networks:
+      - sandbox-net
+
+networks:
+  sandbox-net:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16
